@@ -41,7 +41,7 @@ PyFileScraper currently supports a very limited usage. This will be changing soo
 ./fileScraper.py {http:https}://{domain}/{path}
 ```
 
-It's very important that you check the absolute location of the web site you're intending to scrape, i.e., [www.example.com](www.example.com) or just [example.com](example.com).
+It's very important that you check the absolute location of the web site you're intending to scrape, i.e., [www.example.com](www.example.com) or just [example.com](example.com). Basically, it will not follow 301s.
 
 Currently, PyFileScraper will only add URLs to the scraping list if the FQDN is an exact match. It will also transform these URLs to match the scheme of the target URL, e.g., [http://example.com/page-2](http://example.com/page-2) will be scraped as [https://example.com/page-2](https://example.com/page-2), providing you specified the HTTPS version of the site.
 
