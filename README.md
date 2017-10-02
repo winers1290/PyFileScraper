@@ -4,11 +4,11 @@ A simple Python 3 web scraper that searches for files.
 ---
 
 # Overview
-PyFileScraper works like a traditional web scraper. It loads a page, searches for a link, loads that link, and repeats. The difference here, is that we're specifically hunting for documents.
+PyFileScraper works like a traditional web scraper. It loads a page, searches for a link, loads that link, and repeats. The difference here is that we're specifically hunting for documents.
 
 These documents could be images, word templates, spreadsheets... Basically, anything that could or probably contains metadata.
 
-PyFileScraper can be used as a reconnaissance tool, ideally in combination with a metadata analysis platform, such as [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/). 
+PyFileScraper can be used as a reconnaissance tool, ideally in combination with a metadata analysis platform, such as [exiftool](https://www.sno.phy.queensu.ca/~phil/exiftool/) or [FOCA](https://www.elevenpaths.com/labstools/foca/index.html).
 
 # Requirements
 - Python 3+
