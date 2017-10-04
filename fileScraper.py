@@ -19,6 +19,7 @@ class fileScraper:
 		self.pageArray = [self.prettyUrl(self.parsedurl)] #List of all page links
 		self.scrapedPages = [] #List of pages successfully scraped
 		self.files = []
+		self.filterCritera = ['@', '#', 'share=', 'tel', 'mailto', 'javascript']
 		self.parsedUrl = ''
 		self.loopCount = 0
 		self.loop =  True
@@ -54,32 +55,35 @@ class fileScraper:
 			if len(url.path) > len(ext) and url.path[(len(ext) * -1):] == ext:
 				return
 
-		#Check link is on the same domain
-		if self.domain == url_domain and '@' not in url.geturl() and 'share=' not in url.geturl():
-			#Domain is the same. Iterate over paths to check for duplicate
-			if self.prettyUrl(url) not in self.pageArray:
-				#Make sure URL is constructed properly, and store
-				self.pageArray.append(self.prettyUrl(url))
+		#Filter URL for bad things...
+		if self.filterUrl(url): #We do this up here, even if url.scheme is null,
+		#because it helps avoid the extra processing below for invalid urls
 
-		#Filter our relative links
-		elif url_domain == "": #Indicates relative or special link
-			#remove all the special types of link
-			if url.scheme == "mailto" or url.scheme == "tel" or url.scheme == "javascript" or '@' in url.geturl() or 'share=' in url.geturl():
-				pass
-			else:
-				#Now remove pseudo #links
-				if isinstance(href, str) and len(href) > 1:
-					if href[0] == "#":
-						pass
-					else:
-						#Link is relative, make absolute
-						url = urljoin(self.url, url.path)
-						url = urlparse(url)
-						if self.prettyUrl(url) not in self.pageArray:
-							self.pageArray.append(self.prettyUrl(url))
+			#Check link is on the same domain
+			if self.domain == url_domain:
+				#Domain is the same. Iterate over paths to check for duplicate
+				if self.prettyUrl(url) not in self.pageArray:
+					#Make sure URL is constructed properly, and store
+					self.pageArray.append(self.prettyUrl(url))
 
+			#Filter our relative links
+			elif url_domain == "": #Indicates relative or special link
+				#Link is relative, make absolute
+				url = urljoin(self.url, url.path)
+				url = urlparse(url)
+				if self.prettyUrl(url) not in self.pageArray:
+					self.pageArray.append(self.prettyUrl(url))
 
 		return
+
+	def filterUrl(self, url):
+
+		if self.filterCritera in url.path
+		or self.filterCritera in url.scheme
+		or self.filterCritera in url.query:
+			return False
+		else:
+			return True
 
 	def findFiles(self, link):
 
@@ -93,6 +97,9 @@ class fileScraper:
 			except KeyError:
 				return False
 
+		#NOTE: Haven't yet come across a URL with a file extension that is
+		# ALSO a pseudo URL, such as #not-a-link.pdf, so at this stage there
+		# if no filtering. 
 
 		#Check for cool file extensions
 		for ext in self.fileExtensions:
