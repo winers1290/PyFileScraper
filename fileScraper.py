@@ -15,7 +15,7 @@ class fileScraper:
 		self.url = self.parseURL(sys.argv[1])
 		self.parsedurl = urlparse(self.url)
 		#Declare variables
-		self.fileExtensions = ['.asc', '.txt', '.tar.gz', '.gz', '.tar', '.py', '.zip', '.rar', '.pdf', '.doc', '.dot', '.docx', '.docm', '.dotx', '.docm', '.docb', '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xlxt', '.xltm', '.xlsb', '.xla', '.xlam', '.xll', '.csv', '.json', '.sxw', '.sxc', '.sxi', '.odt', '.ods', '.odg', '.odp', '.wpd', '.svgz', '.indd', '.rdp', '.ica', '.xml', '.pps', '.ppsx', '.ppt', '.pptx', '.pptm', '.potx', '.potm', '.ppam', '.ppsm', '.sldx', '.sldm', '.pub', '.xps', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.tiff', '.bmp', '.stl']
+		self.fileExtensions = ['.asc', '.txt', '.tar.gz', '.gz', '.tar', '.py', '.zip', '.rar', '.pdf', '.doc', '.dot', '.docx', '.docm', '.dotx', '.docm', '.docb', '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xlxt', '.xltm', '.xlsb', '.xla', '.xlam', '.xll', '.csv', '.json', '.xml', '.ppt', '.pptx', '.pptm', '.potx', '.potm', '.ppam', '.ppsm', '.sldx', '.sldm', '.pub', '.xps', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.tiff', '.bmp', '.stl']
 		self.pageArray = [self.prettyUrl(self.parsedurl)] #List of all page links
 		self.scrapedPages = [] #List of pages successfully scraped
 		self.files = []
@@ -55,7 +55,7 @@ class fileScraper:
 				return
 
 		#Check link is on the same domain
-		if self.domain == url_domain:
+		if self.domain == url_domain and '@' not in url.geturl() and 'share=' not in url.geturl():
 			#Domain is the same. Iterate over paths to check for duplicate
 			if self.prettyUrl(url) not in self.pageArray:
 				#Make sure URL is constructed properly, and store
@@ -64,7 +64,7 @@ class fileScraper:
 		#Filter our relative links
 		elif url_domain == "": #Indicates relative or special link
 			#remove all the special types of link
-			if url.scheme == "mailto" or url.scheme == "tel" or url.scheme == "javascript":
+			if url.scheme == "mailto" or url.scheme == "tel" or url.scheme == "javascript" or '@' in url.geturl() or 'share=' in url.geturl():
 				pass
 			else:
 				#Now remove pseudo #links
@@ -73,7 +73,7 @@ class fileScraper:
 						pass
 					else:
 						#Link is relative, make absolute
-						url = urljoin(self.url, href)
+						url = urljoin(self.url, url.path)
 						url = urlparse(url)
 						if self.prettyUrl(url) not in self.pageArray:
 							self.pageArray.append(self.prettyUrl(url))
@@ -98,9 +98,11 @@ class fileScraper:
 		for ext in self.fileExtensions:
 			if len(url.path) > len(ext) and url.path[(len(ext) * -1):] == ext:
 				#We have a match
-				#Construct absolute URL and check for duplicates
-				joinedurl = urljoin(self.prettyUrl(self.parsedurl), url.path)
-				url = urlparse(joinedurl)
+				if url.scheme == "":
+					#Construct absolute URL and check for duplicates
+					joinedurl = urljoin(self.prettyUrl(self.parsedurl), url.path)
+					url = urlparse(joinedurl)
+
 				if self.prettyUrl(url) not in self.files:
 					self.files.append(self.prettyUrl(url))
 
