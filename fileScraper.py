@@ -19,7 +19,7 @@ class fileScraper:
 		self.pageArray = [self.prettyUrl(self.parsedurl)] #List of all page links
 		self.scrapedPages = [] #List of pages successfully scraped
 		self.files = []
-		self.filterCritera = ['@', '#', 'share=', 'tel', 'mailto', 'javascript']
+		self.filterCriteria = ['@', '#', 'share=', 'tel', 'mailto', 'javascript']
 		self.parsedUrl = ''
 		self.loopCount = 0
 		self.loop =  True
@@ -78,12 +78,11 @@ class fileScraper:
 
 	def filterUrl(self, url):
 
-		if self.filterCritera in url.path
-		or self.filterCritera in url.scheme
-		or self.filterCritera in url.query:
-			return False
-		else:
-			return True
+		for criteria in self.filterCriteria:
+			if criteria in url.path or criteria in url.scheme or criteria in url.query:
+				return False
+			else:
+				return True
 
 	def findFiles(self, link):
 
@@ -99,7 +98,7 @@ class fileScraper:
 
 		#NOTE: Haven't yet come across a URL with a file extension that is
 		# ALSO a pseudo URL, such as #not-a-link.pdf, so at this stage there
-		# if no filtering. 
+		# if no filtering.
 
 		#Check for cool file extensions
 		for ext in self.fileExtensions:
@@ -169,7 +168,7 @@ class fileScraper:
 				soup = BeautifulSoup(result, "html.parser")
 
 				#Find Links
-				for link in soup.find_all('a', href=True):
+				for link in soup.find_all(['a', 'link'], href=True):
 					self.parseResult(link)
 
 				#Find files
