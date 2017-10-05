@@ -1,5 +1,5 @@
-# PyFileScraper
-A simple Python 3 web scraper that searches for files.
+# Python File Scraper
+A simple Python 3 web scraper that searches for documents containing metadata.
 
 ---
 
