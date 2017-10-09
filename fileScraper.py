@@ -17,10 +17,15 @@ class fileScraper:
 		#Declare variables
 		self.fileExtensions = ['.asc', '.txt', '.tar.gz', '.gz', '.tar', '.py', '.zip', '.rar', '.pdf', '.doc', '.dot', '.docx', '.docm', '.dotx', '.docm', '.docb', '.xls', '.xlt', '.xlm', '.xlsx', '.xlsm', '.xlxt', '.xltm', '.xlsb', '.xla', '.xlam', '.xll', '.csv', '.json', '.xml', '.ppt', '.pptx', '.pptm', '.potx', '.potm', '.ppam', '.ppsm', '.sldx', '.sldm', '.pub', '.xps', '.jpg', '.jpeg', '.png', '.gif', '.svg', '.tiff', '.bmp', '.stl']
 		self.pageArray = [self.prettyUrl(self.parsedurl)] #List of all page links
-		self.scrapedPages = [] #List of pages successfully scraped
 		self.files = []
 		self.filterCriteria = ['@', '#', 'share=', 'tel', 'mailto', 'javascript']
 		self.parsedUrl = ''
+		#self.followSubDomains = True
+
+		if len(argv) == 3:
+			self.urlExclusionPaths = urlparse(sys.argv[2]).path.split('/')
+		else:
+			self.urlExclusionPaths = ""
 		self.loopCount = 0
 		self.loop =  True
 
@@ -78,11 +83,30 @@ class fileScraper:
 
 	def filterUrl(self, url):
 
-		for criteria in self.filterCriteria:
-			if criteria in url.path or criteria in url.scheme or criteria in url.query:
+		urlPaths = url.path.split('/')
+		childLink = False
+		childCount = 0
+
+		for criteria in self.filterCriteria: #For all of our filer criteria
+			if criteria in url.path or criteria in url.scheme or criteria in url.query: #If it appears anywhere
+				return False #Get rid of it
+
+			else: #It is passes
+				continue
+		if self.urlExclusionPaths != '':
+			for index, path in self.urlExclusionPaths: #Check its not a child link of our exclusion zone
+				if path == urlPath[index]:
+					childCount = childCount + 1
+				else:
+					continue
+
+			if childCount >= len(self.urlExclusionPaths): #It is a child of our exclusion parent
 				return False
-			else:
-				return True
+			else: #all good!
+				return True;
+		else:
+			return True
+
 
 	def findFiles(self, link):
 
