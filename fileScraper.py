@@ -22,10 +22,19 @@ class fileScraper:
 		self.parsedUrl = ''
 		#self.followSubDomains = True
 
-		if len(argv) == 3:
-			self.urlExclusionPaths = urlparse(sys.argv[2]).path.split('/')
+		if len(sys.argv) == 3:
+
+			tmpPath = sys.argv[2]
+
+			if tmpPath[0] == "/":
+				tmpPath = tmpPath[1:]
+			if tmpPath[len(tmpPath) - 1] == "/":
+				tmpPath = tmpPath[0:len(tmpPath) - 1]
+
+			self.urlExclusionPaths = urlparse(tmpPath).path.split('/')
 		else:
 			self.urlExclusionPaths = ""
+
 		self.loopCount = 0
 		self.loop =  True
 
@@ -60,6 +69,7 @@ class fileScraper:
 			if len(url.path) > len(ext) and url.path[(len(ext) * -1):] == ext:
 				return
 
+
 		#Filter URL for bad things...
 		if self.filterUrl(url): #We do this up here, even if url.scheme is null,
 		#because it helps avoid the extra processing below for invalid urls
@@ -83,9 +93,20 @@ class fileScraper:
 
 	def filterUrl(self, url):
 
-		urlPaths = url.path.split('/')
-		childLink = False
-		childCount = 0
+
+		path = url.path
+		urlPaths = []
+
+		if len(path) > 2:
+			if path[0] == "/":
+				path = path[1:]
+			if path[len(path) - 1] == "/":
+				path = path[0:len(path) - 1]
+
+			urlPaths = path.split('/')
+			childLink = False
+			childCount = 0
+
 
 		for criteria in self.filterCriteria: #For all of our filer criteria
 			if criteria in url.path or criteria in url.scheme or criteria in url.query: #If it appears anywhere
@@ -93,9 +114,12 @@ class fileScraper:
 
 			else: #It is passes
 				continue
-		if self.urlExclusionPaths != '':
-			for index, path in self.urlExclusionPaths: #Check its not a child link of our exclusion zone
-				if path == urlPath[index]:
+
+		if self.urlExclusionPaths != '' and len(urlPaths) > 0:
+
+			for index, path in enumerate(self.urlExclusionPaths): #Check its not a child link of our exclusion zone
+
+				if path == urlPaths[index]:
 					childCount = childCount + 1
 				else:
 					continue
